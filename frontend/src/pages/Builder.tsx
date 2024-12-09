@@ -9,20 +9,9 @@ import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { parseXml } from "../steps";
 import { useWebContainer } from "../hooks/useWebContainer";
-// import { FileNode } from '@webcontainer/api';
 import { Loader } from "../components/Loader";
 import GrokPrompt from "../components/GrokPrompt";
 import UserPrompt from "../components/UserPrompt";
-import JSZip from "jszip";
-
-const MOCK_FILE_CONTENT = `// This is a sample file content
-import React from 'react';
-tabview
-function Component() {
-  return <div>Hello World</div>;
-}
-
-export default Component;`;
 
 export function Builder() {
   const location = useLocation();
@@ -35,10 +24,7 @@ export function Builder() {
   const [templateSet, setTemplateSet] = useState(false);
   const webcontainer = useWebContainer();
   const [messages, setMessages] = useState<string[]>([]);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [activeTab, setActiveTab] = useState<"code" | "preview" | "LUA">(
-    "code"
-  );
+  const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
 
   const [steps, setSteps] = useState<Step[]>([]);
@@ -69,8 +55,8 @@ export function Builder() {
       .map((step) => {
         updateHappened = true;
         if (step?.type === StepType.CreateFile) {
-          let parsedPath = step.path?.split("/") ?? []; // ["src", "components", "App.tsx"]
-          let currentFileStructure = [...originalFiles]; // {}
+          let parsedPath = step.path?.split("/") ?? [];
+          let currentFileStructure = [...originalFiles];
           let finalAnswerRef = currentFileStructure;
 
           let currentFolder = "";
@@ -232,27 +218,6 @@ export function Builder() {
     init();
   }, []);
 
-  function addFilesToZip(folderPath: any, files: any, zip: any) {
-    files.forEach((file: any) => {
-      if (file.type === "file") {
-        zip.file(folderPath + file.name, file.content);
-      } else if (file.type === "folder" && file.children) {
-        addFilesToZip(folderPath + file.name + "/", file.children, zip);
-      }
-    });
-  }
-
-  const handleDownload = () => {
-    const zip = new JSZip();
-    addFilesToZip("", files, zip);
-
-    zip.generateAsync({ type: "blob" }).then(function (content: any) {
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(content);
-      link.download = "files.zip";
-      link.click();
-    });
-  };
 
   return (
     // outer div
@@ -291,18 +256,11 @@ export function Builder() {
               func={closeChat}
               activeTab={activeTab}
               onTabChange={setActiveTab}
-            />
-            <button
-              className="bg-lime-300 p-3 rounded-xl"
-              onClick={handleDownload}
-            >
-              Download Zip
-            </button>
+              files={files}
+            />           
             <div className="h-[calc(100%-4rem)]">
               {activeTab === "code" ? (
                 <CodeEditor file={selectedFile} />
-              ) : activeTab === "LUA" ? (
-                <div className="h-full w-full bg-black"></div>
               ) : (
                 <PreviewFrame webContainer={webcontainer} files={files} />
               )}

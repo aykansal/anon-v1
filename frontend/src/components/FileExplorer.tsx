@@ -67,7 +67,7 @@ export function FileExplorer({ files, onFileSelect }: FileExplorerProps) {
   return (
     <div className="bg-gray-900 rounded-lg shadow-lg p-4 h-full overflow-hidden  ">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-100">
-        A<b className='w-fit -mx-[6px] '>0_</b>labs template 
+        ANON Files 
       </h2>
       <div className="space-y-1 h-full overflow-y-auto ">
         {files.map((file, index) => (

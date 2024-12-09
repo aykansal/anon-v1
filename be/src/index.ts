@@ -6,6 +6,8 @@ import { TextBlock } from "@anthropic-ai/sdk/resources";
 import { BASE_PROMPT, getSystemPrompt, LUA_CONTEXT_PROMPT } from "./prompts";
 import { basePrompt as reactBasePrompt } from "./defaults/react";
 import { ARWEAVE_WALLET_KIT, LUA_COOKBOOK } from "./data";
+import bodyParser from "body-parser";
+import axios from "axios";
 
 const anthropic = new Anthropic({
   apiKey: "xai-OvR6xKY46HCd7LeksVuaUYkVbUgeJ8vqsxACAhZeRhWOmJP7nDyCVHdDMpHergVA8nOHK7LqON4HInvm",
@@ -15,6 +17,7 @@ const anthropic = new Anthropic({
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 
 app.post("/template", async (req, res) => {
   try {
@@ -22,173 +25,7 @@ app.post("/template", async (req, res) => {
       ans: "react",
       prompts: [
         BASE_PROMPT,
-        `You are an AI assistant specializing in generating Lua scripts for Arweave. 
-                I am providing you with a sample chatroom app setupped on arweave using lua handlers and functions. 
-                 "lua"
-                Building a Chatroom in aos
-                INFO
-    
-                If you've found yourself wanting to learn how to create a chatroom within ao, then that means we understand at least the basic methodology of sending and receiving messages. If not, it's suggested that you review the Messaging tutorial before proceeding.
-    
-                In this tutorial, we'll be building a chatroom within ao using the Lua scripting language. The chatroom will feature two primary functions:
-    
-                Register: Allows processes to join the chatroom.
-                Broadcast: Sends messages from one process to all registered participants.
-                Let's begin by setting up the foundation for our chatroom.
-    
-                Video Tutorial
-    
-                Step 1: The Foundation
-                Open your preferred code editor, e.g. VS Code.
-                INFO
-    
-                You may find it helpful to have the Recommended Extensions installed in your code editor to enhance your Lua scripting experience.
-    
-                Create a new file named chatroom.lua.
-                Chatroom Lua File
-    
-                Step 2: Creating The Member List
-                In chatroom.lua, you'll begin by initializing a list to track participants:
-    
-                lua
-                Members = Members or {}
-                Chatroom Lua File - Naming the Member List
-    
-                Save the chatroom.lua file
-                Step 3: Load the Chatroom into aos
-                With chatroom.lua saved, you'll now load the chatroom into aos.
-    
-                If you haven't already, start your aos in your terminal inside the directory where chatroom.lua is saved
-    
-                In the aos CLI, type the following script to incorporate your script into the aos process:
-    
-                lua
-                .load chatroom.lua
-                Loading the Chatroom into aos
-    
-                As the screenshot above shows, you may receive undefined as a response. This is expected, but we still want to make sure the file loaded correctly.
-    
-                INFO
-    
-                In the Lua Eval environment of aos, when you execute a piece of code that doesn't explicitly return a value, undefined is a standard response, indicating that no result was returned. This can be observed when loading resources or executing operations. For instance, executing X = 1 will yield undefined because the statement does not include a return statement.
-    
-                However, if you execute X = 1; return X, the environment will return the value 1. This behavior is essential to understand when working within this framework, as it helps clarify the distinction between executing commands that modify state versus those intended to produce a direct output.
-    
-                Type Members, or whatever you named your user list, in aos. It should return an empty array { }.
-    
-                Checking the Members List
-    
-                If you see an empty array, then your script has been successfully loaded into aos.
-    
-                Step 4: Creating Chatroom Functionalities
-                The Registration Handler
-                The register handler will allow processes to join the chatroom.
-    
-                Adding a Register Handler: Modify chatroom.lua to include a handler for Members to register to the chatroom with the following code:
-    
-                lua
-    
-                -- Modify chatroom.lua to include a handler for Members
-                -- to register to the chatroom with the following code:
-    
-                Handlers.add(
-                    "Register",
-                    { Action = "Register"},
-                    function (msg)
-                    table.insert(Members, msg.From)
-                    print(msg.From .. " Registered")
-                    msg.reply({ Data = "Registered." })
-                    end
-                )
-                Register Handler
-    
-                This handler will allow processes to register to the chatroom by responding to the tag Action = "Register". A printed message will confirm stating registered will appear when the registration is successful.
-    
-                Reload and Test: Let's reload and test the script by registering ourselves to the chatroom.
-    
-                Save and reload the script in aos using .load chatroom.lua.
-                Check to see if the register handler loaded with the following script:
-                lua
-                Handlers.list
-                Checking the Handlers List
-    
-                This will return a list of all the handlers in the chatroom. Since this is most likely your first time developing in aos, you should only see one handler with the name Register.
-    
-                Let's test the registration process by registering ourselves to the chatroom:
-                lua
-                Send({ Target = ao.id, Action = "Register" })
-                If successful, you should see that there was a message added to your outbox and that you then see a new printed message that says registered.
-    
-                Registering to the Chatroom
-    
-                Finally, let's check to see if we were successfully added to the Members list:
-                lua
-                Members
-                If successful, you'll now see your process ID in the Members list.
-    
-                Checking the Members List
-    
-                Adding a Broadcast Handler
-                Now that you have a chatroom, let's create a handler that will allow you to broadcast messages to all members of the chatroom.
-    
-                Add the following handler to the chatroom.lua file:
-    
-                lua
-                Handlers.add(
-                    "Broadcast",
-                    { Action = "Broadcast" },
-                    function (msg)
-                    for _, recipient in ipairs(Members) do
-                        ao.send({Target = recipient, Data = msg.Data})
-                    end
-                    msg.reply({Data = "Broadcasted." })
-                    end
-                )
-                This handler will allow you to broadcast messages to all members of the chatroom.
-    
-                Save and reload the script in aos using .load chatroom.lua.
-    
-                Let's test the broadcast handler by sending a message to the chatroom:
-    
-                lua
-                Send({Target = ao.id, Action = "Broadcast", Data = "Broadcasting My 1st Message" }).receive().Data
-                Step 5: Inviting Morpheus to the Chatroom
-                Now that you've successfully registered yourself to the chatroom, let's invite Morpheus to join us. To do this, we'll send an invite to him that will allow him to register to the chatroom.
-    
-                Morpheus is an autonomous agent with a handler that will respond to the tag Action = "Join", in which will then have him use your Register tag to register to the chatroom.
-    
-                Let's send Morpheus an invitation to join the chatroom:
-    
-                lua
-                Send({ Target = Morpheus, Action = "Join" })
-                To confirm that Morpheus has joined the chatroom, check the Members list:
-    
-                lua
-                Members
-                If successful, you'll receive a broadcasted message from Morpheus.
-    
-                Step 6: Inviting Trinity to the Chatroom
-                Within this message, he'll give you Trinity's process ID and tell you to invite her to the chatroom.
-    
-                Use the same processes to save her process ID as Trinity and to invite her to the chatroom as you did with Morpheus.
-    
-                If she successfully joins the chatroom, she'll then pose the next challenge to you, creating a token.
-    
-                Engaging Others in the Chatroom
-                Onboarding Others
-                Invite aos Users: Encourage other aos users to join your chatroom. They can register and participate in the broadcast.
-    
-                Provide Onboarding Instructions: Share a simple script with them for easy onboarding:
-    
-                lua
-                -- Hey, let's chat on aos! Join my chatroom by sending this command in your aos environment:
-                Send({ Target = [Your Process ID], Action = "Register" })
-                -- Then, you can broadcast messages using:
-                Send({Target = [Your Process ID], Action = "Broadcast", Data = "Your Message" })
-                Congratulations! You've successfully built a chatroom in ao and have invited Morpheus to join you. You've also created a broadcast handler to send messages to all members of the chatroom. This is how you can build a chatroom in aos using Lua scripting. You can further enhance the chatroom by adding more functionalities, such as private messaging, message history, and more. Now, use this approach to create further handlers for tother usecases based on userprompt.
-        Stick to the specified functionality, inputs, and outputs described in the documentation.
-        `, ` 
-              -- Messaging Protocol
+        `       -- Messaging Protocol
                 Balance(Target? : string)
                 Returns the balance of a target, if a target is not supplied then the balance of the sender of the message must be returned.
 
@@ -419,8 +256,7 @@ app.post("/template", async (req, res) => {
                   end
                 )"""
         `,
-        `
-       
+        `       
         lua
         { Action = "Balance" }
         if you want to match on every message with the Quantity being a Number
@@ -693,16 +529,17 @@ app.post("/template", async (req, res) => {
           """
           """
           `
-          ,`
+        , `
           Arweave Wallet Kit
           React Hooks and Components for better interaction with Arweave wallets. Modular, can support any Arweave-based wallet.
 
+          //install
           npm i arweave-wallet-kit
 
-          import 
+          import {ArweaveWalletKit} from 'arweave-wallet-kit'
           const App = () => {
             return (
-              <ArweaveWalletKit>
+              <ArweaveWalletKit> //ArweaveWalletKitProvider
                 <YourApp />
               </ArweaveWalletKit>
             );
@@ -1264,9 +1101,8 @@ app.post("/template", async (req, res) => {
         `,
         `
         While final giving me the code, you hace to export the components into a single index.ts file, so create a index.ts file and export all the components from there, also you have to provide the code only, no text, Also stick to the specified docs, like if user asked for handler then you have to use handler syntax. 
-        `
-        ,
-        "After getting reponse based on user response, you just have to provide code only, no text, Also stick to the specified docs, like if user asked for handler then you have to use handler syntax.",
+        `,
+        "After getting reponse based on user response, you just have to provide code only, no text, Also stick to the specified docs, like if user asked for handler then you have to use handler syntax. Also provide the lua code by understanding what can be done in arweave handlers based on the given prompt as well.",
         `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${reactBasePrompt}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`
       ],
       uiPrompts: [reactBasePrompt]
@@ -1291,5 +1127,28 @@ app.post("/chat", async (req, res) => {
     response: (response.content[0] as TextBlock)?.text
   });
 })
+
+app.get("/getAccessToken", async (req, res) => {
+  const params = "?client_id=" + process.env.CLIENT_ID + "&client_secret=" + process.env.CLIENT_SECRET + "&code=" + req.query.code;
+  await axios.post("https://github.com/login/oauth/access_token" + params)
+    .then((response) => { return response.data })
+    .then((data) => {
+      res.json(data);
+    })
+})
+
+app.get('/getUserData', async (req, res) => {
+  req.get('Authorization'); //Bearer ACCESS_TOKEN
+  await axios
+    .get("https://api.github.com/user", {
+      headers: {
+        Authorization: req.get('Authorization')
+      }
+    })
+    .then((response) => { return response.data })
+    .then((data) => {
+      res.json(data);
+    })
+});
 
 app.listen(3000);
