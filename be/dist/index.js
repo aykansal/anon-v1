@@ -25,7 +25,9 @@ const anthropic = new sdk_1.default({
     baseURL: "https://api.x.ai/",
 });
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: 'https://anonlabs-frontend.vercel.app', // Allow only your frontend
+}));
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
