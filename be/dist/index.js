@@ -30,8 +30,7 @@ const corsOptions = {
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // List of allowed headers
 };
-// app.use(cors(corsOptions)); 
-app.use((0, cors_1.default)({ origin: '*' })); // Allow all origins
+app.use((0, cors_1.default)(corsOptions));
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app"); // Allow the frontend
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
@@ -1134,7 +1133,11 @@ app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json({ message: "Internal server error" });
     }
 }));
-app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/chat", (0, cors_1.default)({
+    origin: "https://anonlabs-frontend.vercel.app",
+    methods: ['POST'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const messages = req.body.messages;
     const response = yield anthropic.messages.create({

@@ -20,8 +20,7 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
   allowedHeaders: ['Content-Type', 'Authorization'],  // List of allowed headers
 };
-// app.use(cors(corsOptions)); 
-app.use(cors({ origin: '*' }));  // Allow all origins
+app.use(cors(corsOptions));
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app"); // Allow the frontend
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
@@ -1127,7 +1126,13 @@ app.post("/template", async (req, res) => {
   }
 });
 
-app.post("/chat", async (req, res) => {
+app.post("/chat", cors(
+  {
+    origin: "https://anonlabs-frontend.vercel.app",
+    methods: ['POST'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }
+), async (req, res) => {
   const messages = req.body.messages;
   const response = await anthropic.messages.create({
     model: 'grok-beta',
