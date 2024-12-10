@@ -16,13 +16,13 @@ const anthropic = new Anthropic({
 
 const app = express();
 const corsOptions = {
-  origin: 'https://anonlabs-frontend.vercel.app',  // Allow only your frontend
+  origin: ['https://anonlabs-frontend.vercel.app',"https://anon-labs_arlink.arweave.net"],  // Allow only your frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
   allowedHeaders: ['Content-Type', 'Authorization'],  // List of allowed headers
 };
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app"); // Allow the frontend
+  res.header("Access-Control-Allow-Origin", ["https://anonlabs-frontend.vercel.app","https://anon-labs_arlink.arweave.net"]); // Allow the frontend
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
   next();
@@ -1128,7 +1128,7 @@ app.post("/template", async (req, res) => {
 
 app.post("/chat", cors(
   {
-    origin: "https://anonlabs-frontend.vercel.app",
+    origin: ["https://anonlabs-frontend.vercel.app","https://anon-labs_arlink.arweave.net"],
     methods: ['POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }
