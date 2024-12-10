@@ -1155,4 +1155,6 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+process.removeAllListeners('warning');
+
 app.listen(3000);
