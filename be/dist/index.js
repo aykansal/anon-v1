@@ -25,9 +25,19 @@ const anthropic = new sdk_1.default({
     baseURL: "https://api.x.ai/",
 });
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({
+const corsOptions = {
     origin: 'https://anonlabs-frontend.vercel.app', // Allow only your frontend
-}));
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // List of allowed headers
+};
+// app.use(cors(corsOptions)); 
+app.use((0, cors_1.default)({ origin: '*' })); // Allow all origins
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app"); // Allow the frontend
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
+    next();
+});
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

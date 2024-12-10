@@ -15,9 +15,20 @@ const anthropic = new Anthropic({
 });
 
 const app = express();
-app.use(cors({
+const corsOptions = {
   origin: 'https://anonlabs-frontend.vercel.app',  // Allow only your frontend
-})); 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // List of allowed headers
+};
+// app.use(cors(corsOptions)); 
+app.use(cors({ origin: '*' }));  // Allow all origins
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app"); // Allow the frontend
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
+  next();
+});
+
 app.use(express.json());
 app.use(bodyParser.json());
 
