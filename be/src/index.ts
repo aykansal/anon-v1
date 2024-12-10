@@ -15,7 +15,9 @@ const anthropic = new Anthropic({
 });
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://anonlabs-frontend.vercel.app',  // Allow only your frontend
+})); 
 app.use(express.json());
 app.use(bodyParser.json());
 
