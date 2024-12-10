@@ -22,7 +22,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", ["https://anonlabs-frontend.vercel.app","https://anon-labs_arlink.arweave.net"]); // Allow the frontend
+  res.header("Access-Control-Allow-Origin", "https://anon-labs_arlink.arweave.net"); // Allow the frontend
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
   next();
@@ -1128,7 +1128,7 @@ app.post("/template", async (req, res) => {
 
 app.post("/chat", cors(
   {
-    origin: ["https://anonlabs-frontend.vercel.app","https://anon-labs_arlink.arweave.net"],
+    origin: "https://anon-labs_arlink.arweave.net",
     methods: ['POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
   }
