@@ -1,10 +1,6 @@
 import { useState } from "react";
-import svg from "../assets/images/logo2.png";
 import { GiPolarStar } from "react-icons/gi";
 import Cta_button from "../components/Cta_button";
-import ex1 from "../assets/images/design-example-1.png";
-import ex2 from "../assets/images/design-example-2.png";
-import cursor from "../assets/images/cursor-you.svg";
 import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
@@ -19,23 +15,6 @@ const Landing = () => {
     }
   };
 
-  // const connectWallet = async () => {
-  //   try {
-  //     if (window.arweaveWallet === undefined) {
-  //       alert("try again ");
-  //     } else {
-  //       await window.arweaveWallet.connect([
-  //         "SIGN_TRANSACTION",
-  //         "ACCESS_ADDRESS",
-  //       ]);
-  //       const address = await window.arweaveWallet.getActiveAddress();
-  //       console.log(address);
-  //     }
-  //   } catch (e) {
-  //     console.log("something went wrong ");
-  //   }
-  // };
-
   return (
     <div className="w-full bg-black py-10 md:py-8 f5">
       <div className="w-full h-[100vh] md:h-screen overflow-x-hidden text-white f5">
@@ -43,7 +22,11 @@ const Landing = () => {
         <div className="w-full md:w-[60%] px-4 justify-between text-white flex items-center h-[9%] rounded-full border-white/30 border-[1px] mx-auto">
           {/* Logo */}
           <div className="h-16 md:h-44">
-            <img className="h-full" src={svg} alt="main logo" />
+            <img
+              className="h-full"
+              src="/assets/images/logo.svg"
+              alt="main logo"
+            />
           </div>
 
           {/* Nav links - Hidden on mobile */}
@@ -159,16 +142,16 @@ const Landing = () => {
 
           {/* Example images - Hidden on mobile */}
           <div className="hidden md:block absolute top-[137px] -left-5">
-            <img src={ex1} alt="example1" />
+            <img src={"/assets/images/dex1.png"} alt="example1" />
           </div>
           <div className="hidden md:block absolute top-[10px] -right-32">
-            <img src={ex2} alt="example2" />
+            <img src={"/assets/images/dex2.png"} alt="example2" />
           </div>
           <div className="hidden md:block absolute top-[79%] left-[22%]">
-            <img src={cursor} alt="cursor" />
+            <img src={"/assets/images/cursor-you.svg"} alt="cursor" />
           </div>
           <div className="hidden md:block absolute top-[10%] right-[20.5%]">
-            <img src={cursor} alt="cursor" />
+            <img src={"/assets/images/cursor-you.svg"} alt="cursor" />
           </div>
         </div>
       </div>
