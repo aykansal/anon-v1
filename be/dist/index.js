@@ -31,11 +31,6 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use((0, cors_1.default)(corsOptions));
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-});
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
