@@ -19,22 +19,22 @@ const Landing = () => {
     }
   };
 
-  const connectWallet = async () => {
-    try {
-      if (window.arweaveWallet === undefined) {
-        alert("try again ");
-      } else {
-        await window.arweaveWallet.connect([
-          "SIGN_TRANSACTION",
-          "ACCESS_ADDRESS",
-        ]);
-        const address = await window.arweaveWallet.getActiveAddress();
-        console.log(address);
-      }
-    } catch (e) {
-      console.log("something went wrong ");
-    }
-  };
+  // const connectWallet = async () => {
+  //   try {
+  //     if (window.arweaveWallet === undefined) {
+  //       alert("try again ");
+  //     } else {
+  //       await window.arweaveWallet.connect([
+  //         "SIGN_TRANSACTION",
+  //         "ACCESS_ADDRESS",
+  //       ]);
+  //       const address = await window.arweaveWallet.getActiveAddress();
+  //       console.log(address);
+  //     }
+  //   } catch (e) {
+  //     console.log("something went wrong ");
+  //   }
+  // };
 
   return (
     <div className="w-full bg-black py-10 md:py-8 f5">
