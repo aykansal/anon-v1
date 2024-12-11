@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 interface PreviewFrameProps {
   files?: any[];
-  webContainer?: WebContainer;
+  webContainer: WebContainer;
 }
 
 export function PreviewFrame({ webContainer }: PreviewFrameProps) {
@@ -12,9 +12,6 @@ export function PreviewFrame({ webContainer }: PreviewFrameProps) {
 
   async function main() {
     try{
-    if (!webContainer) {
-      throw new Error("webContainer is undefined");
-    }
     
     const installProcess = await webContainer.spawn('npm', ['install']);
 

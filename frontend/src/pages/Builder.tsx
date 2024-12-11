@@ -26,13 +26,9 @@ export function Builder() {
   const [messages, setMessages] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
-
   const [steps, setSteps] = useState<Step[]>([]);
-
   const [files, setFiles] = useState<FileItem[]>([]);
-
   const [chat, setchat] = useState(true);
-
   const closeChat = () => {
     setchat((prev) => !prev);
   };

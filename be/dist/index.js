@@ -26,7 +26,7 @@ const anthropic = new sdk_1.default({
 });
 const app = (0, express_1.default)();
 const corsOptions = {
-    origin: "*",
+    origin: "http://localhost:5173",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
@@ -1128,18 +1128,20 @@ app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const messages = req.body.messages;
-    const response = yield anthropic.messages.create({
-        model: 'grok-beta',
-        messages: messages,
-        max_tokens: 8000,
-        system: (0, prompts_1.getSystemPrompt)()
-    });
-    console.log(response);
     res.json({
-        response: (_a = response.content[0]) === null || _a === void 0 ? void 0 : _a.text
+        response: "/chat post route working"
     });
+    // const messages = req.body.messages;
+    // const response = await anthropic.messages.create({
+    //   model: 'grok-beta',
+    //   messages: messages,
+    //   max_tokens: 8000,
+    //   system: getSystemPrompt()
+    // })
+    // console.log(response);
+    // res.json({
+    //   response: (response.content[0] as TextBlock)?.text
+    // });
 }));
 app.get("/getAccessToken", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const params = "?client_id=" + process.env.CLIENT_ID + "&client_secret=" + process.env.CLIENT_SECRET + "&code=" + req.query.code;
