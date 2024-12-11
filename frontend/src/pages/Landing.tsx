@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
   const [prompt, setPrompt] = useState("");
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: any) => {
