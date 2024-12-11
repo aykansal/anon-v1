@@ -15,43 +15,17 @@ const anthropic = new Anthropic({
 
 const app = express();
 const corsOptions = {
-  origin: (origin: any, callback: any) => {
-    const allowedOrigins = [
-      "https://anonlabs-frontend.vercel.app",
-      "https://anon_arlink.arweave.net",
-    ];
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS")); 
-    }
-  },
+  origin: "https://anonlabs-frontend.vercel.app",
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],  
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
 
 // app.use((req, res, next) => {
-//   const allowedOrigins = [
-//     "https://anonlabs-frontend.vercel.app",
-//     "https://anon-labs_arlink.arweave.net",
-//     "https://another-allowed-domain.com"
-//   ];
-//   const origin = req.headers.origin;
-
-//   if (allowedOrigins.indexOf(origin) !== -1) {
-//     res.header("Access-Control-Allow-Origin", origin);
-//   } else {
-//     res.header("Access-Control-Allow-Origin", "");
-//   }
+//   res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app");
 //   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
 //   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   if (req.method === "OPTIONS") {
-//     res.sendStatus(200);
-//   } else {
-//     next();
-//   }
 // });
 
 
@@ -1153,13 +1127,7 @@ app.post("/template", async (req, res) => {
   }
 });
 
-app.post("/chat", cors(
-  {
-    origin: "https://anon-labs_arlink.arweave.net",
-    methods: ['POST'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }
-), async (req, res) => {
+app.post("/chat", async (req, res) => {
   const messages = req.body.messages;
   const response = await anthropic.messages.create({
     model: 'grok-beta',
