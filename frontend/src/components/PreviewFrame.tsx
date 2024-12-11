@@ -2,17 +2,19 @@ import { WebContainer } from '@webcontainer/api';
 import { useEffect, useState } from 'react';
 
 interface PreviewFrameProps {
-  files: any[];
-  webContainer: WebContainer;
+  files?: any[];
+  webContainer?: WebContainer;
 }
 
-export function PreviewFrame({ files, webContainer }: PreviewFrameProps) {
+export function PreviewFrame({ webContainer }: PreviewFrameProps) {
   // In a real implementation, this would compile and render the preview
   const [url, setUrl] = useState("");
 
   async function main() {
     try{
-
+    if (!webContainer) {
+      throw new Error("webContainer is undefined");
+    }
     
     const installProcess = await webContainer.spawn('npm', ['install']);
 

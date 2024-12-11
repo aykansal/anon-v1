@@ -1,7 +1,7 @@
 import { useState } from "react";
 import svg from "../assets/images/logo2.png";
 import { GiPolarStar } from "react-icons/gi";
-import A0_button from "../components/A0_button";
+import Cta_button from "../components/Cta_button";
 import ex1 from "../assets/images/design-example-1.png";
 import ex2 from "../assets/images/design-example-2.png";
 import cursor from "../assets/images/cursor-you.svg";
@@ -78,7 +78,7 @@ const Landing = () => {
           {/* Connect wallet button */}
           <div className="hidden md:flex">
             <div className="opacity-50 w-fit">
-              <A0_button
+              <Cta_button
                 bg={"transparent"}
                 border={true}
                 content={"Coming Soon"}
@@ -98,7 +98,7 @@ const Landing = () => {
                 </a>
               ))}
               <div onClick={connectWallet} className="py-2">
-                <A0_button
+                <Cta_button
                   bg={"transparent"}
                   border={true}
                   content={"Projects"}
@@ -146,7 +146,7 @@ const Landing = () => {
                   type="text"
                 />
                 <div onClick={handleSubmit}>
-                  <A0_button
+                  <Cta_button
                     bg={"#A6E433"}
                     border={false}
                     content={"Generate"}

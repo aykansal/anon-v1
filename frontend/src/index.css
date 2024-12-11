@@ -8,79 +8,25 @@
 
 * {
   -ms-overflow-style: none;
-  scrollbar-width: none; 
+  scrollbar-width: none;
 }
-
 
 .noscroll::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .noscroll {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-@font-face {
-  font-family: font1;
-  src: url("./assets/65fc1fde7df04a64b3adebba_RobochyiSansOF-Medium.ttf");
-}
-@font-face {
-  font-family: font2;
-  src: url("./assets/65fc1fdedf245a9c01c8958b_RobochyiSansOF-Semi.ttf");
-}
-@font-face {
-  font-family: font3;
-  src: url("./assets/i7dOIFdwYjGaAMFtZd_QA1ZbYFc.ttf");
-}
-@font-face {
-  font-family: font4;
-  src: url("./assets/Roboto-Regular.ttf");
-}
 @font-face {
   font-family: font5;
   src: url("./assets/Inter.ttc");
 }
-@font-face {
-  font-family: font6;
-  src: url("./assets/i7dMIFZifjKcF5UAWdDRaPpZUFWaHg.ttf");
-}
-@font-face {
-  font-family: font7;
-  src: url("./assets/i7dPIFZifjKcF5UAWdDRYEF8RQ.ttf");
-}
-@font-face {
-  font-family: font8;
-  src: url("./assets/Pixeled.ttf");
-}
 
-.f1{
-  font-family: font1;
-}
-
-.f2{
-  font-family: font2;
-}
-.f3{
-  font-family: font3;
-}
-.f4{
-  font-family: font4;
-}
-
-.f5{
+.f5 {
   font-family: font5;
-}
-
-.f6{
-  font-family: font6;
-}
-.f7{
-  font-family: font7;
-}
-.f8{
-  font-family: font8;
 }
 
 .gradient-animation {

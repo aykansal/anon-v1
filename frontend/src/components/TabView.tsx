@@ -3,10 +3,10 @@ import { Code2, Eye } from "lucide-react";
 import { FileItem } from "../types";
 
 interface TabViewProps {
-  activeTab: "code" | "preview";
+  activeTab: "code" | "preview" | "LUA";
   func: () => void;
   onTabChange: (tab: "code" | "preview") => void;
-  files: FileItem[];
+  files?: FileItem[];
 }
 
 export function TabView({ activeTab, onTabChange, func, files }: TabViewProps) {
@@ -32,9 +32,7 @@ export function TabView({ activeTab, onTabChange, func, files }: TabViewProps) {
     });
   };
 
-  const handleGit = async () => {
-    
-  };
+  const handleGit = async () => {};
 
   return (
     <div className="flex space-x-2 mb-4">

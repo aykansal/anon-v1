@@ -5,7 +5,7 @@ interface Val {
   size : string
 }
 
-const A0_button: React.FC<Val> = ({ bg, border, content , size }) => {
+const Cta_button: React.FC<Val> = ({ bg, border, content , size }) => {
   return (
     <button
       style={{ backgroundColor: bg  , width:size+"px"}}
@@ -18,4 +18,4 @@ const A0_button: React.FC<Val> = ({ bg, border, content , size }) => {
   );
 };
 
-export default A0_button;
+export default Cta_button;

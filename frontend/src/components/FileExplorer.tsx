@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { FolderTree, File, ChevronRight, ChevronDown } from 'lucide-react';
-import { FileItem } from '../types';
+import React from "react";
+import { FolderTree, File, ChevronRight, ChevronDown } from "lucide-react";
+import { FileItem } from "../types";
 
 interface FileExplorerProps {
   files: FileItem[];
@@ -14,10 +14,10 @@ interface FileNodeProps {
 }
 
 function FileNode({ item, depth, onFileClick }: FileNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   const handleClick = () => {
-    if (item.type === 'folder') {
+    if (item.type === "folder") {
       setIsExpanded(!isExpanded);
     } else {
       onFileClick(item);
@@ -31,7 +31,7 @@ function FileNode({ item, depth, onFileClick }: FileNodeProps) {
         style={{ paddingLeft: `${depth * 1.5}rem` }}
         onClick={handleClick}
       >
-        {item.type === 'folder' && (
+        {item.type === "folder" && (
           <span className="text-gray-400">
             {isExpanded ? (
               <ChevronDown className="w-4 h-4" />
@@ -40,14 +40,14 @@ function FileNode({ item, depth, onFileClick }: FileNodeProps) {
             )}
           </span>
         )}
-        {item.type === 'folder' ? (
+        {item.type === "folder" ? (
           <FolderTree className="w-4 h-4 text-blue-400" />
         ) : (
           <File className="w-4 h-4 text-gray-400" />
         )}
         <span className="text-gray-200">{item.name}</span>
       </div>
-      {item.type === 'folder' && isExpanded && item.children && (
+      {item.type === "folder" && isExpanded && item.children && (
         <div>
           {item.children.map((child, index) => (
             <FileNode
@@ -67,7 +67,7 @@ export function FileExplorer({ files, onFileSelect }: FileExplorerProps) {
   return (
     <div className="bg-gray-900 rounded-lg shadow-lg p-4 h-full overflow-hidden  ">
       <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-100">
-        ANON Files 
+        ANON Files
       </h2>
       <div className="space-y-1 h-full overflow-y-auto ">
         {files.map((file, index) => (

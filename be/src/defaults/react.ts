@@ -1,5 +1,4 @@
-export const basePrompt = 
-`
+export const basePrompt = `
 <boltArtifact id="project-import" title="Project Files">
   <boltAction type="file" filePath="eslint.config.js">
     import js from '@eslint/js';
