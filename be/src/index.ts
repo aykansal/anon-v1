@@ -3,9 +3,8 @@ require("dotenv").config();
 import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import { TextBlock } from "@anthropic-ai/sdk/resources";
-import { BASE_PROMPT, getSystemPrompt, LUA_CONTEXT_PROMPT } from "./prompts";
+import { BASE_PROMPT, getSystemPrompt } from "./prompts";
 import { basePrompt as reactBasePrompt } from "./defaults/react";
-import { ARWEAVE_WALLET_KIT, LUA_COOKBOOK } from "./data";
 import bodyParser from "body-parser";
 import axios from "axios";
 
@@ -16,17 +15,45 @@ const anthropic = new Anthropic({
 
 const app = express();
 const corsOptions = {
-  origin: ['https://anonlabs-frontend.vercel.app',"https://anon-labs_arlink.arweave.net"],  // Allow only your frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // List of allowed headers
+  origin: (origin: any, callback: any) => {
+    const allowedOrigins = [
+      "https://anonlabs-frontend.vercel.app",
+      "https://anon_arlink.arweave.net",
+    ];
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS")); 
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],  
 };
+
 app.use(cors(corsOptions));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://anon-labs_arlink.arweave.net"); // Allow the frontend
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
-  next();
-});
+
+// app.use((req, res, next) => {
+//   const allowedOrigins = [
+//     "https://anonlabs-frontend.vercel.app",
+//     "https://anon-labs_arlink.arweave.net",
+//     "https://another-allowed-domain.com"
+//   ];
+//   const origin = req.headers.origin;
+
+//   if (allowedOrigins.indexOf(origin) !== -1) {
+//     res.header("Access-Control-Allow-Origin", origin);
+//   } else {
+//     res.header("Access-Control-Allow-Origin", "");
+//   }
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   if (req.method === "OPTIONS") {
+//     res.sendStatus(200);
+//   } else {
+//     next();
+//   }
+// });
+
 
 app.use(express.json());
 app.use(bodyParser.json());
