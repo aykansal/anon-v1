@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home } from "./pages/Home";
+// import { Home } from "./pages/Home";
 import Github from "./pages/Github";
 import Landing from "./pages/Landing";
 import { Builder } from "./pages/Buider-new";
