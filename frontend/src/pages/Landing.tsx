@@ -88,21 +88,18 @@ const Landing = () => {
               <h1>Game-Changing Innovation</h1>
             </div>
 
-            <div className="text-center mt-3 tracking-tighter leading-none text-[6.5rem]">
+            <div className="text-center mt-3 tracking-tighter leading-none text-[5.5rem]">
               <h1>Impactful design,</h1>
               <h1>Created effortlessly</h1>
             </div>
 
             <div className="text-center opacity-60 mt-7">
               <p>
-                Design tools shouldn't slow you down, Layer combines powerful
+                Design tools shouldn't slow you down, Anon turns your powerful
               </p>
-              <p>
-                features with an intuitive interface that keeps you in your
-                creative flow
+              <p>and creative ideas into reality with single prompt.
               </p>
             </div>
-
             <div className="w-full flex justify-center mt-8">
               <div className="w-[40%] h-16 border-[1px] flex items-center pl-5 pr-2 border-white/30 rounded-full">
                 <input
