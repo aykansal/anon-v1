@@ -114,7 +114,7 @@ const Landing = () => {
           <div className="w-full flex flex-col items-center px-4 md:px-0">
             {/* Innovation badge */}
             <div className="w-[80%] md:w-[20%] uppercase mb-5 text-xs md:text-sm flex items-center justify-center gap-3 h-9 border-[1px] border-[#a6e433] text-[#a6e433] rounded-full">
-              {/* <GiPolarStar /> */}
+              <GiPolarStar />
               <h1>Game-Changing Innovation</h1>
             </div>
 
