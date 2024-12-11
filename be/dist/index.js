@@ -26,17 +26,16 @@ const anthropic = new sdk_1.default({
 });
 const app = (0, express_1.default)();
 const corsOptions = {
-    origin: ['https://anonlabs-frontend.vercel.app', "https://anon-labs_arlink.arweave.net"], // Allow only your frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // List of allowed headers
+    origin: "https://anonlabs-frontend.vercel.app",
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use((0, cors_1.default)(corsOptions));
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://anon-labs_arlink.arweave.net"); // Allow the frontend
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
-    next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "https://anonlabs-frontend.vercel.app");
+//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+// });
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1133,11 +1132,7 @@ app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json({ message: "Internal server error" });
     }
 }));
-app.post("/chat", (0, cors_1.default)({
-    origin: "https://anon-labs_arlink.arweave.net",
-    methods: ['POST'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const messages = req.body.messages;
     const response = yield anthropic.messages.create({
