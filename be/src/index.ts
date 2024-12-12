@@ -3,7 +3,7 @@ require("dotenv").config();
 import express from "express";
 import Anthropic from "@anthropic-ai/sdk";
 import { TextBlock } from "@anthropic-ai/sdk/resources";
-import { BASE_PROMPT, getSystemPrompt } from "./prompts";
+import { getSystemPrompt } from "./prompts";
 import { basePrompt as reactBasePrompt } from "./defaults/react";
 import bodyParser from "body-parser";
 import axios from "axios";
@@ -30,6 +30,13 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.setTimeout(120000, () => { // 120 seconds (2 minutes)
+    res.status(408).send('Request Timeout');
+  });
+  next();
+});
+
 app.post("/template", async (req, res) => {
   try {
     res.json({
@@ -50,17 +57,30 @@ app.get("/chat", (req, res) => {
 
 app.post("/chat", async (req, res) => {
   const messages = await req.body.messages;
-  const response = await anthropic.messages.create({
-    model: 'grok-beta',
-    messages: messages,
-    max_tokens: 8000,
-    system: getSystemPrompt()
-  })
-  console.log(response);
-  res.json({
-    response: (response.content[0] as TextBlock)?.text
-  });
-})
+  console.log("Starting API call to Anthropic...\n");
+  const startTime = Date.now();
+  try {
+    const response = await anthropic.messages.create({
+      model: 'grok-beta',
+      messages: messages,
+      max_tokens: 8000,
+      system: getSystemPrompt()
+    });
+
+    const endTime = Date.now();
+    console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
+
+    console.log(response);
+
+    res.json({
+      response: (response.content[0] as TextBlock)?.text
+    });
+  } catch (error) {
+    const endTime = Date.now();
+    console.error(`Error during API call. Took ${endTime - startTime}ms`, error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 app.get("/getAccessToken", async (req, res) => {
   const params = "?client_id=" + process.env.CLIENT_ID + "&client_secret=" + process.env.CLIENT_SECRET + "&code=" + req.query.code;

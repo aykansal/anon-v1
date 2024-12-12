@@ -169,56 +169,47 @@ export default function Builder() {
   }, [files, webcontainer]);
 
   async function init() {
-    const response = await axios.post(`${BACKEND_URL}/template`, {
-      prompt: prompt.trim(),
-    });
-    setTemplateSet(true);
-
-    const { prompts, uiPrompts } = response.data;
-
-    setSteps(
-      parseXml(uiPrompts[0]).map((x: Step) => ({
+    try {
+      const response = await axios.post(`${BACKEND_URL}/template`, {
+        prompt: prompt.trim(),
+      });
+      setTemplateSet(true);
+      const { prompts, uiPrompts } = response.data;
+      setSteps(
+        parseXml(uiPrompts[0]).map((x: Step) => ({
+          ...x,
+          status: "pending",
+        }))
+      );
+      setLoading(true);
+      const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
+        messages: [...prompts, prompt].map((content) => ({
+          role: "user",
+          content,
+        })),
+      });
+      setLoading(false);
+      setSteps((s) => [
+        ...s,
+        ...parseXml(stepsResponse.data.response).map((x) => ({
+          ...x,
+          status: "pending" as "pending",
+        })),
+      ]);
+      setLlmMessages(
+        [...prompts, prompt].map((content) => ({
+          role: "user",
+          content,
+        }))
+      );
+      setLlmMessages((x) => [
         ...x,
-        status: "pending",
-      }))
-    );
-
-    setLoading(true);
-    // const testChat = await axios.post(`${BACKEND_URL}/chat`,{
-    //   messages:[{
-    //     role:"user",
-    //     content:"who are you" 
-    //   }]
-    // });
-    // console.log(testChat.data);
-    const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
-      messages: [...prompts, prompt].map((content) => ({
-        role: "user",
-        content,
-      })),
-    });
-
-    setLoading(false);
-
-    setSteps((s) => [
-      ...s,
-      ...parseXml(stepsResponse.data.response).map((x) => ({
-        ...x,
-        status: "pending" as "pending",
-      })),
-    ]);
-
-    setLlmMessages(
-      [...prompts, prompt].map((content) => ({
-        role: "user",
-        content,
-      }))
-    );
-
-    setLlmMessages((x) => [
-      ...x,
-      { role: "assistant", content: stepsResponse.data.response },
-    ]);
+        { role: "assistant", content: stepsResponse.data.response },
+      ]);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

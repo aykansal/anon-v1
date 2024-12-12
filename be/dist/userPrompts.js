@@ -3,12 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.promptsArr = exports.testPromptsArr = void 0;
 const prompts_1 = require("./prompts");
 const react_1 = require("./defaults/react");
-exports.testPromptsArr = [
-    prompts_1.BASE_PROMPT,
-    `While final giving me the code, you hace to export the components into a single index.ts file, so create a index.ts file and export all the components from there, also you have to provide the code only, no text, Also stick to the specified docs, like if user asked for handler then you have to use handler syntax.`,
-    `After getting reponse based on user response, you just have to provide code only, no text, Also stick to the specified docs, like if user asked for handler then you have to use handler syntax. Also provide the lua code by understanding what can be done in arweave handlers based on the given prompt as well.`,
-    `Here is an artifact that contains all files of the project visible to you.\nConsider the contents of ALL files in the project.\n\n${react_1.basePrompt}\n\nHere is a list of files that exist on the file system but are not being shown to you:\n\n  - .gitignore\n  - package-lock.json\n`
-];
+exports.testPromptsArr = [prompts_1.BASE_PROMPT];
 exports.promptsArr = [
     prompts_1.BASE_PROMPT,
     `       -- Messaging Protocol
