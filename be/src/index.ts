@@ -29,7 +29,10 @@ app.use((req, res, next) => {
 })
 app.use(express.json());
 app.use(bodyParser.json());
-
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 app.use((req, res, next) => {
   res.setTimeout(120000, () => { // 120 seconds (2 minutes)
     res.status(408).send('Request Timeout');
@@ -41,7 +44,7 @@ app.post("/template", async (req, res) => {
   try {
     res.json({
       ans: "react",
-      prompts:testPromptsArr ,
+      prompts: testPromptsArr,
       uiPrompts: [reactBasePrompt]
     });
     return;
@@ -53,16 +56,17 @@ app.post("/template", async (req, res) => {
 
 app.get("/chat", (req, res) => {
   res.send("/chat get route working");
-})
+});
 
 app.post("/chat", async (req, res) => {
   const messages = await req.body.messages;
+  console.log(messages);
   console.log("Starting API call to Anthropic...\n");
   const startTime = Date.now();
   try {
     const response = await anthropic.messages.create({
       model: 'grok-beta',
-      messages: messages,
+      messages: [{ role: 'user', content: "I want to create a react app" }],
       max_tokens: 8000,
       system: getSystemPrompt()
     });

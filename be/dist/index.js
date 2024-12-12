@@ -40,6 +40,10 @@ app.use((req, res, next) => {
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    next();
+});
+app.use((req, res, next) => {
     res.setTimeout(120000, () => {
         res.status(408).send('Request Timeout');
     });
@@ -65,12 +69,13 @@ app.get("/chat", (req, res) => {
 app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const messages = yield req.body.messages;
+    console.log(messages);
     console.log("Starting API call to Anthropic...\n");
     const startTime = Date.now();
     try {
         const response = yield anthropic.messages.create({
             model: 'grok-beta',
-            messages: messages,
+            messages: [{ role: 'user', content: "I want to create a react app" }],
             max_tokens: 8000,
             system: (0, prompts_1.getSystemPrompt)()
         });
