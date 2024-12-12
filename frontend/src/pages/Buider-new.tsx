@@ -173,6 +173,7 @@ export default function Builder() {
       const response = await axios.post(`${BACKEND_URL}/template`, {
         prompt: prompt.trim(),
       });
+      console.log(response.data);
       setTemplateSet(true);
       const { prompts, uiPrompts } = response.data;
       setSteps(
@@ -183,16 +184,14 @@ export default function Builder() {
       );
       setLoading(true);
 
-      const promptsResponse = await axios.post(`${BACKEND_URL}/chat`, {
-        messages:[{role: "user", content: "blog website"}]
-      });
-      console.log(promptsResponse.data.response);
       const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
-        messages: [...prompts, prompt].map((content) => ({
-          role: "user",
-          content,
-        })),
+        messages: [{ role: "user", content: "blog website" }],
+        // messages: [...prompts, prompt].map((content) => ({
+        //   role: "user",
+        //   content,
+        // })),
       });
+      console.log(stepsResponse.data);
       setLoading(false);
       setSteps((s) => [
         ...s,
@@ -219,7 +218,6 @@ export default function Builder() {
 
   useEffect(() => {
     init();
-    
   }, []);
 
   return (
