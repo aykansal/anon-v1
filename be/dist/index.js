@@ -26,16 +26,16 @@ const anthropic = new sdk_1.default({
 });
 const app = (0, express_1.default)();
 const corsOptions = {
-    origin: ['https://anonlabs-frontend.vercel.app', "https://anon-labs_arlink.arweave.net"], // Allow only your frontend
+    origin: ['https://anonlabs-frontend.vercel.app', "https://anon-labs_arlink.arweave.net", "http://localhost:5173"], // Allow only your frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // You can specify allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // List of allowed headers
 };
 app.use((0, cors_1.default)(corsOptions));
 app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "https://anon-labs_arlink.arweave.net"); // Allow the frontend
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
-    next();
+  res.header("Access-Control-Allow-Origin", "https://anon-labs_arlink.arweave.net"); // Allow the frontend
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Allow specific HTTP methods
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Allow specific headers
+  next();
 });
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
@@ -1134,7 +1134,7 @@ app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 app.post("/chat", (0, cors_1.default)({
-    origin: "https://anon-labs_arlink.arweave.net",
+    origin: "http://localhost:5173",
     methods: ['POST'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
