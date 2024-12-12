@@ -185,7 +185,7 @@ app.use((req, res, next) => {
     res.header("Cross-Origin-Opener-Policy", "same-origin");
     next();
 });
-app.use(express_1.default.json());
+app.use(express_1.default.json({ limit: '50mb' }));
 app.use(body_parser_1.default.json());
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
