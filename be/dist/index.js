@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
-require("dotenv").config();
 const express_1 = __importDefault(require("express"));
 const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 const prompts_1 = require("./prompts");
@@ -21,6 +20,31 @@ const react_1 = require("./defaults/react");
 const body_parser_1 = __importDefault(require("body-parser"));
 const axios_1 = __importDefault(require("axios"));
 const userPrompts_1 = require("./userPrompts");
+// Configure axios defaults
+axios_1.default.defaults.timeout = 30000; // 30 second timeout
+axios_1.default.defaults.headers.common['Accept'] = 'application/json';
+// Create axios instance with default config
+const axiosInstance = axios_1.default.create({
+    timeout: 30000,
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+// Add response interceptor for error handling
+axiosInstance.interceptors.response.use(response => response, error => {
+    console.error('Axios Error:', error.message);
+    if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Response Data:', error.response.data);
+        console.error('Response Status:', error.response.status);
+    }
+    else if (error.request) {
+        // The request was made but no response was received
+        console.error('Request Error:', error.request);
+    }
+    return Promise.reject(error);
+});
 const anthropic = new sdk_1.default({
     apiKey: "xai-OvR6xKY46HCd7LeksVuaUYkVbUgeJ8vqsxACAhZeRhWOmJP7nDyCVHdDMpHergVA8nOHK7LqON4HInvm",
     baseURL: "https://api.x.ai/",
@@ -49,72 +73,192 @@ app.use((req, res, next) => {
     });
     next();
 });
-app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        res.json({
-            ans: "react",
-            prompts: userPrompts_1.testPromptsArr,
-            uiPrompts: [react_1.basePrompt]
-        });
-        return;
-    }
-    catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-}));
-app.get("/chat", (req, res) => {
-    res.send("/chat get route working");
+// Utility function to handle async requests
+const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+// Enhanced error handling middleware
+app.use((error, req, res, next) => {
+    console.error('Error:', error);
+    res.status(error.status || 500).json({
+        error: {
+            message: error.message || 'Internal server error',
+            status: error.status || 500
+        }
+    });
 });
-app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/template", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // const response = await axiosInstance.post('/your-template-endpoint', {
+    //   // Add your template data here
+    // });
+    res.json({
+        ans: "react",
+        prompts: userPrompts_1.testPromptsArr,
+        uiPrompts: [react_1.basePrompt]
+    });
+})));
+app.post("/chat", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const messages = yield req.body.messages;
-    console.log(messages);
+    const messages = req.body.messages;
     console.log("Starting API call to Anthropic...\n");
     const startTime = Date.now();
-    try {
-        const response = yield anthropic.messages.create({
-            model: 'grok-beta',
-            messages: [{ role: 'user', content: "I want to create a react app" }],
-            max_tokens: 8000,
-            system: (0, prompts_1.getSystemPrompt)()
-        });
-        const endTime = Date.now();
-        console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
-        console.log(response);
-        res.json({
-            response: (_a = response.content[0]) === null || _a === void 0 ? void 0 : _a.text
-        });
-    }
-    catch (error) {
-        const endTime = Date.now();
-        console.error(`Error during API call. Took ${endTime - startTime}ms`, error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-}));
-app.get("/getAccessToken", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const params = "?client_id=" + process.env.CLIENT_ID + "&client_secret=" + process.env.CLIENT_SECRET + "&code=" + req.query.code;
-    yield axios_1.default.post("https://github.com/login/oauth/access_token" + params)
-        .then((response) => { return response.data; })
-        .then((data) => {
-        res.json(data);
+    const response = yield anthropic.messages.create({
+        model: 'grok-beta',
+        messages: [{ role: 'user', content: "I want to create a react app" }],
+        max_tokens: 8000,
+        system: (0, prompts_1.getSystemPrompt)()
     });
-}));
-app.get('/getUserData', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    req.get('Authorization'); //Bearer ACCESS_TOKEN
-    yield axios_1.default
-        .get("https://api.github.com/user", {
-        headers: {
-            Authorization: req.get('Authorization')
-        }
-    })
-        .then((response) => { return response.data; })
-        .then((data) => {
-        res.json(data);
+    const endTime = Date.now();
+    console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
+    console.log(response);
+    res.json({
+        response: (_a = response.content[0]) === null || _a === void 0 ? void 0 : _a.text
     });
-}));
+})));
+// app.get("/getAccessToken", asyncHandler(async (req, res) => {
+//   const params = new URLSearchParams({
+//     client_id: process.env.CLIENT_ID,
+//     client_secret: process.env.CLIENT_SECRET,
+//     code: req.query.code
+//   }).toString();
+//   const response = await axiosInstance.post(
+//     `https://github.com/login/oauth/access_token?${params}`,
+//     null,
+//     {
+//       headers: {
+//         Accept: 'application/json'
+//       }
+//     }
+//   );
+//   res.json(response.data);
+// }));
+// app.get('/getUserData', asyncHandler(async (req, res) => {
+//   const authHeader = req.get('Authorization');
+//   if (!authHeader) {
+//     throw new Error('Authorization header is required');
+//   }
+//   const response = await axiosInstance.get("https://api.github.com/user", {
+//     headers: {
+//       Authorization: authHeader
+//     }
+//   });
+//   res.json(response.data);
+// }));
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 process.removeAllListeners('warning');
-app.listen(3000);
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+    console.info('SIGTERM signal received.');
+    process.exit(0);
+});
+app.listen(3000, () => {
+    console.log('Server running on port 3000');
+});
+// import cors from "cors";
+// require("dotenv").config();
+// import express from "express";
+// import Anthropic from "@anthropic-ai/sdk";
+// import { TextBlock } from "@anthropic-ai/sdk/resources";
+// import { getSystemPrompt } from "./prompts";
+// import { basePrompt as reactBasePrompt } from "./defaults/react";
+// import bodyParser from "body-parser";
+// import axios from "axios";
+// import { testPromptsArr } from "./userPrompts";
+// const anthropic = new Anthropic({
+//   apiKey: "xai-OvR6xKY46HCd7LeksVuaUYkVbUgeJ8vqsxACAhZeRhWOmJP7nDyCVHdDMpHergVA8nOHK7LqON4HInvm",
+//   baseURL: "https://api.x.ai/",
+// });
+// const app = express();
+// const corsOptions = {
+//   origin: "*",
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+// };
+// app.use(cors(corsOptions));
+// app.use((req, res, next) => {
+//   res.header("Cross-Origin-Embedder-Policy", "require-corp");
+//   res.header("Cross-Origin-Opener-Policy", "same-origin");
+//   next()
+// })
+// app.use(express.json());
+// app.use(bodyParser.json());
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   next();
+// });
+// app.use((req, res, next) => {
+//   res.setTimeout(120000, () => { // 120 seconds (2 minutes)
+//     res.status(408).send('Request Timeout');
+//   });
+//   next();
+// });
+// app.post("/template", async (req, res) => {
+//   try {
+//     res.json({
+//       ans: "react",
+//       prompts: testPromptsArr,
+//       uiPrompts: [reactBasePrompt]
+//     });
+//     return;
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
+// app.get("/chat", (req, res) => {
+//   res.send("/chat get route working");
+// });
+// app.post("/chat", async (req, res) => {
+//   const messages = await req.body.messages;
+//   console.log(messages);
+//   console.log("Starting API call to Anthropic...\n");
+//   const startTime = Date.now();
+//   try {
+//     const response = await anthropic.messages.create({
+//       model: 'grok-beta',
+//       messages: [{ role: 'user', content: "I want to create a react app" }],
+//       max_tokens: 8000,
+//       system: getSystemPrompt()
+//     });
+//     const endTime = Date.now();
+//     console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
+//     console.log(response);
+//     res.json({
+//       response: (response.content[0] as TextBlock)?.text
+//     });
+//   } catch (error) {
+//     const endTime = Date.now();
+//     console.error(`Error during API call. Took ${endTime - startTime}ms`, error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
+// app.get("/getAccessToken", async (req, res) => {
+//   const params = "?client_id=" + process.env.CLIENT_ID + "&client_secret=" + process.env.CLIENT_SECRET + "&code=" + req.query.code;
+//   await axios.post("https://github.com/login/oauth/access_token" + params)
+//     .then((response) => { return response.data })
+//     .then((data) => {
+//       res.json(data);
+//     })
+// })
+// app.get('/getUserData', async (req, res) => {
+//   req.get('Authorization'); //Bearer ACCESS_TOKEN
+//   await axios
+//     .get("https://api.github.com/user", {
+//       headers: {
+//         Authorization: req.get('Authorization')
+//       }
+//     })
+//     .then((response) => { return response.data })
+//     .then((data) => {
+//       res.json(data);
+//     })
+// });
+// app.get('/', (req, res) => {
+//   res.send('Hello World!');
+// });
+// process.removeAllListeners('warning');
+// app.listen(3000);
