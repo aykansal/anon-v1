@@ -192,7 +192,7 @@ app.use((req, res, next) => {
     next();
 });
 app.use((req, res, next) => {
-    res.setTimeout(120000, () => {
+    res.setTimeout(6000000, () => {
         res.status(408).send('Request Timeout');
     });
     next();
