@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { WebContainer } from '@webcontainer/api';
-// import { auth } from "@webcontainer/api";
+import { auth } from "@webcontainer/api";
 
 export function useWebContainer() {
     const [webcontainer, setWebcontainer] = useState<WebContainer>();

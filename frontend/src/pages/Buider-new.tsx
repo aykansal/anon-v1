@@ -184,6 +184,8 @@ export default function Builder() {
     );
 
     setLoading(true);
+    const testChat = await axios.get(`${BACKEND_URL}/chat`);
+    console.log(testChat.data);
     const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
       messages: [...prompts, prompt].map((content) => ({
         role: "user",
@@ -330,6 +332,8 @@ export default function Builder() {
                         };
 
                         setLoading(true);
+                        const testChat = await axios.get(`${BACKEND_URL}/chat`);
+                        console.log(testChat.data);
                         const stepsResponse = await axios.post(
                           `${BACKEND_URL}/chat`,
                           {
