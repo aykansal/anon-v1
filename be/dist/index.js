@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
-const prompts_1 = require("./prompts");
 const react_1 = require("./defaults/react");
 const body_parser_1 = __importDefault(require("body-parser"));
 const axios_1 = __importDefault(require("axios"));
@@ -95,22 +94,28 @@ app.post("/template", asyncHandler((req, res) => __awaiter(void 0, void 0, void 
         uiPrompts: [react_1.basePrompt]
     });
 })));
+// app.post("/chat", asyncHandler(async (req:any, res:any) => {
+//   const messages = req.body.messages;
+//   console.log("Starting API call to Anthropic...\n");
+//   const startTime = Date.now();
+//   const response = await anthropic.messages.create({
+//     model: 'grok-beta',
+//     messages: messages,
+//     max_tokens: 8000,
+//     system: getSystemPrompt()
+//   });
+//   const endTime = Date.now();
+//   console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
+//   console.log(response);
+//   res.json({
+//     response: (response.content[0] as TextBlock)?.text
+//   });
+// }));
 app.post("/chat", asyncHandler((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const messages = req.body.messages;
-    console.log("Starting API call to Anthropic...\n");
-    const startTime = Date.now();
-    const response = yield anthropic.messages.create({
-        model: 'grok-beta',
-        messages: messages,
-        max_tokens: 8000,
-        system: (0, prompts_1.getSystemPrompt)()
-    });
-    const endTime = Date.now();
-    console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
-    console.log(response);
     res.json({
-        response: (_a = response.content[0]) === null || _a === void 0 ? void 0 : _a.text
+        response: "This is a test response",
+        messages: messages
     });
 })));
 // app.get("/getAccessToken", asyncHandler(async (req, res) => {

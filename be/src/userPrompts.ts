@@ -1,7 +1,7 @@
 import { BASE_PROMPT } from "./prompts";
 import { basePrompt as reactBasePrompt } from "./defaults/react";
 
-export const testPromptsArr = [BASE_PROMPT];
+export const testPromptsArr = ["BASE_PROMPT","custom prompt", "reactBasePrompt"];
 
 export const promptsArr = [
   BASE_PROMPT,

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.promptsArr = exports.testPromptsArr = void 0;
 const prompts_1 = require("./prompts");
 const react_1 = require("./defaults/react");
-exports.testPromptsArr = [prompts_1.BASE_PROMPT];
+exports.testPromptsArr = ["BASE_PROMPT", "custom prompt", "reactBasePrompt"];
 exports.promptsArr = [
     prompts_1.BASE_PROMPT,
     `       -- Messaging Protocol
