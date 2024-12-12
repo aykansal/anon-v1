@@ -103,7 +103,7 @@ app.post("/chat", asyncHandler(async (req:any, res:any) => {
 
   const response = await anthropic.messages.create({
     model: 'grok-beta',
-    messages: [{ role: 'user', content: "I want to create a react app" }],
+    messages: messages,
     max_tokens: 8000,
     system: getSystemPrompt()
   });
