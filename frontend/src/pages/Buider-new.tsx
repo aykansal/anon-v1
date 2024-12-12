@@ -182,6 +182,11 @@ export default function Builder() {
         }))
       );
       setLoading(true);
+
+      const promptsResponse = await axios.post(`${BACKEND_URL}/chat`, {
+        messages:[{role: "user", content: "blog website"}]
+      });
+      console.log(promptsResponse.data.response);
       const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
         messages: [...prompts, prompt].map((content) => ({
           role: "user",

@@ -96,32 +96,24 @@ app.post("/template", asyncHandler(async (req:any, res:any) => {
   });
 }));
 
-// app.post("/chat", asyncHandler(async (req:any, res:any) => {
-//   const messages = req.body.messages;
-//   console.log("Starting API call to Anthropic...\n");
-//   const startTime = Date.now();
-
-//   const response = await anthropic.messages.create({
-//     model: 'grok-beta',
-//     messages: messages,
-//     max_tokens: 8000,
-//     system: getSystemPrompt()
-//   });
-
-//   const endTime = Date.now();
-//   console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
-//   console.log(response);
-
-//   res.json({
-//     response: (response.content[0] as TextBlock)?.text
-//   });
-// }));
-
 app.post("/chat", asyncHandler(async (req:any, res:any) => {
-  const messages = req.body.messages;  
-  res.json({ 
-    response: "This is a test response",
-    messages: messages
+  const messages = req.body.messages;
+  console.log("Starting API call to Anthropic...\n");
+  const startTime = Date.now();
+
+  const response = await anthropic.messages.create({
+    model: 'grok-beta',
+    messages: messages,
+    max_tokens: 8000,
+    system: getSystemPrompt()
+  });
+
+  const endTime = Date.now();
+  console.log(`Anthropic API call completed in ${endTime - startTime}ms\n`);
+  console.log(response);
+
+  res.json({
+    response: (response.content[0] as TextBlock)?.text
   });
 }));
 
