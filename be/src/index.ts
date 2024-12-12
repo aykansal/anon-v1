@@ -49,8 +49,7 @@ app.get("/chat", (req, res) => {
 })
 
 app.post("/chat", async (req, res) => {
-  console.log(req.body);
-  const messages = req.body.messages;
+  const messages = await req.body.messages;
   const response = await anthropic.messages.create({
     model: 'grok-beta',
     messages: messages,

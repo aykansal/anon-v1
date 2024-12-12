@@ -58,8 +58,7 @@ app.get("/chat", (req, res) => {
 });
 app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    console.log(req.body);
-    const messages = req.body.messages;
+    const messages = yield req.body.messages;
     const response = yield anthropic.messages.create({
         model: 'grok-beta',
         messages: messages,
