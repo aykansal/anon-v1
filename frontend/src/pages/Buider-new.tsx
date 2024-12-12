@@ -185,12 +185,12 @@ export default function Builder() {
       setLoading(true);
 
       const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
-        messages: [{ role: "user", content: "blog website" }],
-        // messages: [...prompts, prompt].map((content) => ({
-        //   role: "user",
-        //   content,
-        // })),
+        messages: [...prompts, prompt].map((content) => ({
+          role: "user",
+          content,
+        })),
       });
+      
       console.log(stepsResponse.data);
       setLoading(false);
       setSteps((s) => [
