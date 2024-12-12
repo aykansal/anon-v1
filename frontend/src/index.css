@@ -22,7 +22,7 @@
 
 @font-face {
   font-family: font5;
-  src: url("./assets/Inter.ttc");
+  src: url("/assets/Inter.ttc");
 }
 
 .f5 {
