@@ -184,7 +184,12 @@ export default function Builder() {
     );
 
     setLoading(true);
-    const testChat = await axios.get(`${BACKEND_URL}/chat`);
+    const testChat = await axios.post(`${BACKEND_URL}/chat`,{
+      messages:[{
+        role:"user",
+        content:"who are you" 
+      }]
+    });
     console.log(testChat.data);
     const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
       messages: [...prompts, prompt].map((content) => ({
@@ -218,6 +223,7 @@ export default function Builder() {
 
   useEffect(() => {
     init();
+    
   }, []);
 
   return (
