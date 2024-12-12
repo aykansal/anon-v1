@@ -175,7 +175,7 @@ const anthropic = new sdk_1.default({
 });
 const app = (0, express_1.default)();
 const corsOptions = {
-    origin: "*",
+    origin: "https://anonlabs-frontend.vercel.app",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
@@ -187,10 +187,10 @@ app.use((req, res, next) => {
 });
 app.use(express_1.default.json({ limit: '50mb' }));
 app.use(body_parser_1.default.json());
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   next();
+// });
 app.use((req, res, next) => {
     res.setTimeout(6000000, () => {
         res.status(408).send('Request Timeout');
