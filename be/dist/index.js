@@ -201,7 +201,7 @@ app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* 
     try {
         res.json({
             ans: "react",
-            prompts: userPrompts_1.testPromptsArr,
+            prompts: userPrompts_1.promptsArr,
             uiPrompts: [react_1.basePrompt]
         });
         return;
