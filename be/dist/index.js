@@ -31,6 +31,11 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use((0, cors_1.default)(corsOptions));
+app.use((req, res, next) => {
+    res.header("Cross-Origin-Embedder-Policy", "require-corp");
+    res.header("Cross-Origin-Opener-Policy", "same-origin");
+    next();
+});
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 app.post("/template", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -1132,7 +1137,9 @@ app.get("/chat", (req, res) => {
 });
 app.post("/chat", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    console.log(req.body);
     const messages = req.body.messages;
+    console.log(messages);
     const response = yield anthropic.messages.create({
         model: 'grok-beta',
         messages: messages,
