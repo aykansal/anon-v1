@@ -219,7 +219,7 @@ app.post("/template", async (req, res) => {
   try {
     res.json({
       ans: "react",
-      prompts: promptsArr,
+      prompts: testPromptsArr,
       uiPrompts: [reactBasePrompt]
     });
     return;
