@@ -151,15 +151,12 @@ export function Builder() {
         return mountStructure[file.name];
       };
 
-      // Process each top-level file/folder
       files.forEach((file) => processFile(file, true));
-
       return mountStructure;
     };
 
     const mountStructure = createMountStructure(files);
 
-    // Mount the structure if WebContainer is available
     console.log(mountStructure);
     webcontainer?.mount(mountStructure);
   }, [files, webcontainer]);

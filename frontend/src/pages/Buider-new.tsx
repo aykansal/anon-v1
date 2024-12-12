@@ -169,29 +169,28 @@ export default function Builder() {
   }, [files, webcontainer]);
 
   async function init() {
+    const response = await axios.post(`${BACKEND_URL}/template`, {
+      prompt: prompt.trim(),
+    });
+    console.log(response.data);
+    setTemplateSet(true);
+    const { prompts, uiPrompts } = response.data;
+    setSteps(
+      parseXml(uiPrompts[0]).map((x: Step) => ({
+        ...x,
+        status: "pending",
+      }))
+    );
     try {
-      const response = await axios.post(`${BACKEND_URL}/template`, {
-        prompt: prompt.trim(),
-      });
-      console.log(response.data);
-      setTemplateSet(true);
-      const { prompts, uiPrompts } = response.data;
-      setSteps(
-        parseXml(uiPrompts[0]).map((x: Step) => ({
-          ...x,
-          status: "pending",
-        }))
-      );
       setLoading(true);
-
       const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
         messages: [...prompts, prompt].map((content) => ({
           role: "user",
           content,
         })),
       });
-      
-      console.log(stepsResponse.data);
+
+      console.log("steps response:",stepsResponse.data);
       setLoading(false);
       setSteps((s) => [
         ...s,
@@ -211,7 +210,7 @@ export default function Builder() {
         { role: "assistant", content: stepsResponse.data.response },
       ]);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching chats:", error);
       setLoading(false);
     }
   }
