@@ -9,9 +9,6 @@ export default defineConfig({
     include: ['@splinetool/react-spline'],
   },
   server: {
-    proxy: {
-      '/chat': 'https://anonlabs-backend.vercel.app',
-    },
     headers: {
       "Cross-Origin-Embedder-Policy": "require-corp",
       "Cross-Origin-Opener-Policy": "same-origin",

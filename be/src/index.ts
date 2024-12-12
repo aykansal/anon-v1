@@ -21,6 +21,11 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  res.header("Cross-Origin-Embedder-Policy", "require-corp");
+  res.header("Cross-Origin-Opener-Policy", "same-origin");
+  next()
+})
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -1124,6 +1129,7 @@ app.get("/chat", (req, res) => {
 })
 
 app.post("/chat", async (req, res) => {
+  console.log(req.body);
   const messages = req.body.messages;
   const response = await anthropic.messages.create({
     model: 'grok-beta',
