@@ -172,7 +172,7 @@ export default function Builder() {
     const response = await axios.post(`${BACKEND_URL}/template`, {
       prompt: prompt.trim(),
     });
-    console.log(response.data);
+    // console.log(response.data);
     setTemplateSet(true);
     const { prompts, uiPrompts } = response.data;
     setSteps(
@@ -190,7 +190,7 @@ export default function Builder() {
         })),
       });
 
-      console.log("steps response:",stepsResponse.data);
+      // console.log("steps response:",stepsResponse.data);
       setLoading(false);
       setSteps((s) => [
         ...s,
@@ -331,8 +331,6 @@ export default function Builder() {
                         };
 
                         setLoading(true);
-                        const testChat = await axios.get(`${BACKEND_URL}/chat`);
-                        console.log(testChat.data);
                         const stepsResponse = await axios.post(
                           `${BACKEND_URL}/chat`,
                           {

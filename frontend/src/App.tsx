@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Github from "./pages/Github";
 import Landing from "./pages/Landing";
-import Builder from "./pages/Buider-new";
+import Builder from "./pages/Builder-new";
 
 function App() {
   return (
