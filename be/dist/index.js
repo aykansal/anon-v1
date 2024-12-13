@@ -175,7 +175,7 @@ const anthropic = new sdk_1.default({
 });
 const app = (0, express_1.default)();
 const corsOptions = {
-    origin: "https://anonlabs-frontend.vercel.app",
+    origin: "*",
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
