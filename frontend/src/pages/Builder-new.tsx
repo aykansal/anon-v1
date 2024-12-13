@@ -269,6 +269,7 @@ export default function Builder() {
             } transition-all duration-300 rounded-lg shadow-lg p-4`}
           >
             <TabView
+              files={files}
               func={closeChat}
               activeTab={activeTab}
               onTabChange={setActiveTab}

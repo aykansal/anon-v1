@@ -6,12 +6,14 @@ interface TabViewProps {
   activeTab: "code" | "preview" | "LUA";
   func: () => void;
   onTabChange: (tab: "code" | "preview") => void;
-  files?: FileItem[];
+  files: FileItem[];
 }
 
 export function TabView({ activeTab, onTabChange, func, files }: TabViewProps) {
-  function addFilesToZip(folderPath: any, files: any, zip: any) {
-    files.forEach((file: any) => {
+  const zip = new JSZip();
+
+  function addFilesToZip(folderPath: any, files: FileItem[], zip: any) {
+    files.forEach((file: FileItem) => {
       if (file.type === "file") {
         zip.file(folderPath + file.name, file.content);
       } else if (file.type === "folder" && file.children) {
@@ -20,10 +22,9 @@ export function TabView({ activeTab, onTabChange, func, files }: TabViewProps) {
     });
   }
 
-  const handleDownload = () => {
-    const zip = new JSZip();
+  const handleDownload = (files: FileItem[]) => {
+    console.log(files);
     addFilesToZip("", files, zip);
-
     zip.generateAsync({ type: "blob" }).then(function (content: any) {
       const link = document.createElement("a");
       link.href = URL.createObjectURL(content);
@@ -67,11 +68,18 @@ export function TabView({ activeTab, onTabChange, func, files }: TabViewProps) {
         <Code2 className="w-4 h-4" />
         Chat
       </button>
-      <button className="bg-lime-300 p-3 rounded-xl" onClick={handleDownload}>
+      <button
+        className="bg-lime-300 p-3 rounded-xl"
+        onClick={() => handleDownload(files)}
+      >
         Download Zip
       </button>
-      <button className="bg-lime-300 p-3 rounded-xl" onClick={handleGit}>
-        Git Push
+      <button
+        className="bg-lime-300 opacity-50 p-3 rounded-xl"
+        disabled
+        onClick={handleGit}
+      >
+        Git (Coming Soon)
       </button>
     </div>
   );
