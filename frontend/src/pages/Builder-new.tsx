@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import axios from "axios";
 import { FileExplorer } from "../components/FileExplorer";
 import { TabView } from "../components/TabView";
 import { CodeEditor } from "../components/CodeEditor";
 import { PreviewFrame } from "../components/PreviewFrame";
 import { Step, FileItem, StepType } from "../types";
-import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { parseXml } from "../steps";
 import { useWebContainer } from "../hooks/useWebContainer";
@@ -13,7 +13,7 @@ import { Loader } from "../components/Loader";
 import GrokPrompt from "../components/GrokPrompt";
 import UserPrompt from "../components/UserPrompt";
 
-export function Builder() {
+export default function Builder() {
   const location = useLocation();
   const { prompt } = location.state as { prompt: string };
   const [userPrompt, setuserPrompt] = useState("");
@@ -24,18 +24,37 @@ export function Builder() {
   const [templateSet, setTemplateSet] = useState(false);
   const webcontainer = useWebContainer();
   const [messages, setMessages] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<"code" | "preview">("code");
+  const [activeTab, setActiveTab] = useState<"code" | "preview" | "LUA">(
+    "code"
+  );
   const [selectedFile, setSelectedFile] = useState<FileItem | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
   const [files, setFiles] = useState<FileItem[]>([]);
-  const [chat, setchat] = useState(true);
+  const [chat, setchat] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showFileExplorer, setShowFileExplorer] = useState(true);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const closeChat = () => {
     setchat((prev) => !prev);
   };
 
+  const toggleFileExplorer = () => {
+    setShowFileExplorer((prev) => !prev);
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevent newline on enter
+      e.preventDefault();
       if (userPrompt.trim() !== "") {
         setMessages((prev) => [...prev, userPrompt.trim()]);
         setuserPrompt("");
@@ -62,7 +81,6 @@ export function Builder() {
             parsedPath = parsedPath.slice(1);
 
             if (!parsedPath.length) {
-              // final file
               let file = currentFileStructure.find(
                 (x) => x.path === currentFolder
               );
@@ -77,12 +95,10 @@ export function Builder() {
                 file.content = step.code;
               }
             } else {
-              /// in a folder
               let folder = currentFileStructure.find(
                 (x) => x.path === currentFolder
               );
               if (!folder) {
-                // create the folder
                 currentFileStructure.push({
                   name: currentFolderName,
                   type: "folder",
@@ -90,7 +106,6 @@ export function Builder() {
                   children: [],
                 });
               }
-
               currentFileStructure = currentFileStructure.find(
                 (x) => x.path === currentFolder
               )!.children!;
@@ -103,15 +118,12 @@ export function Builder() {
     if (updateHappened) {
       setFiles(originalFiles);
       setSteps((steps) =>
-        steps.map((s: Step) => {
-          return {
-            ...s,
-            status: "completed",
-          };
-        })
+        steps.map((s: Step) => ({
+          ...s,
+          status: "completed",
+        }))
       );
     }
-    console.log(files);
   }, [steps, files]);
 
   useEffect(() => {
@@ -120,7 +132,6 @@ export function Builder() {
 
       const processFile = (file: FileItem, isRootFolder: boolean) => {
         if (file.type === "folder") {
-          // For folders, create a directory entry
           mountStructure[file.name] = {
             directory: file.children
               ? Object.fromEntries(
@@ -139,7 +150,6 @@ export function Builder() {
               },
             };
           } else {
-            // For files, create a file entry with contents
             return {
               file: {
                 contents: file.content || "",
@@ -147,7 +157,6 @@ export function Builder() {
             };
           }
         }
-
         return mountStructure[file.name];
       };
 
@@ -156,8 +165,6 @@ export function Builder() {
     };
 
     const mountStructure = createMountStructure(files);
-
-    console.log(mountStructure);
     webcontainer?.mount(mountStructure);
   }, [files, webcontainer]);
 
@@ -165,112 +172,131 @@ export function Builder() {
     const response = await axios.post(`${BACKEND_URL}/template`, {
       prompt: prompt.trim(),
     });
+    // console.log(response.data);
     setTemplateSet(true);
-
     const { prompts, uiPrompts } = response.data;
-
     setSteps(
       parseXml(uiPrompts[0]).map((x: Step) => ({
         ...x,
         status: "pending",
       }))
     );
+    try {
+      setLoading(true);
+      const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
+        messages: [...prompts, prompt].map((content) => ({
+          role: "user",
+          content,
+        })),
+      });
 
-    setLoading(true);
-    const stepsResponse = await axios.post(`${BACKEND_URL}/chat`, {
-      messages: [...prompts, prompt].map((content) => ({
-        role: "user",
-        content,
-      })),
-    });
-
-    setLoading(false);
-
-    setSteps((s) => [
-      ...s,
-      ...parseXml(stepsResponse.data.response).map((x) => ({
+      // console.log("steps response:",stepsResponse.data);
+      setLoading(false);
+      setSteps((s) => [
+        ...s,
+        ...parseXml(stepsResponse.data.response).map((x) => ({
+          ...x,
+          status: "pending" as "pending",
+        })),
+      ]);
+      setLlmMessages(
+        [...prompts, prompt].map((content) => ({
+          role: "user",
+          content,
+        }))
+      );
+      setLlmMessages((x) => [
         ...x,
-        status: "pending" as "pending",
-      })),
-    ]);
-
-    setLlmMessages(
-      [...prompts, prompt].map((content) => ({
-        role: "user",
-        content,
-      }))
-    );
-
-    setLlmMessages((x) => [
-      ...x,
-      { role: "assistant", content: stepsResponse.data.response },
-    ]);
+        { role: "assistant", content: stepsResponse.data.response },
+      ]);
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
     init();
   }, []);
 
-
   return (
-    // outer div
-    <div className="h-screen bg-black ">
-      {/* inner div */}
-
+    <div className="h-screen bg-black">
       <div className="w-full h-[90%]">
-        {/* inner ka bhi inner div */}
-
-        {/* this is the outer flex div */}
         <div
-          className={` ${
-            chat ? "" : "pl-24"
-          } w-full p-2  h-full flex gap-1  transition-all duration-300 `}
+          className={`w-full p-2 h-full flex flex-col md:flex-row gap-1 transition-all duration-300 ${
+            chat ? "" : "md:pl-24"
+          }`}
         >
-          {/* this is the view folder structure  */}
+          {/* Mobile Navigation */}
+          {isMobile && (
+            <div className="flex justify-between p-2 bg-gray-800 text-white mb-2">
+              <button
+                onClick={toggleFileExplorer}
+                className="px-3 py-1 bg-gray-700 rounded"
+              >
+                {showFileExplorer ? "Hide Files" : "Show Files"}
+              </button>
+              <button
+                onClick={closeChat}
+                className="px-3 py-1 bg-gray-700 rounded"
+              >
+                {chat ? "Hide Chat" : "Show Chat"}
+              </button>
+            </div>
+          )}
 
+          {/* File Explorer */}
           <div
-            className={`h-full ${
-              chat ? "w-[20%] " : "w-[25%]"
-            } w-[20%]   overflow-auto`}
+            className={`${
+              isMobile
+                ? showFileExplorer
+                  ? "h-64"
+                  : "hidden"
+                : chat
+                ? "w-[20%]"
+                : "w-[25%]"
+            } overflow-auto transition-all duration-300`}
           >
-            <div className="px-3 h-full w-full ">
+            <div className="px-3 h-full w-full">
               <FileExplorer files={files} onFileSelect={setSelectedFile} />
             </div>
           </div>
 
-          {/* this is the code editor screen  */}
-
+          {/* Code Editor */}
           <div
-            className={` bg-gray-900 noscroll ${
-              chat ? "w-[55%]" : "w-[70%]"
-            } transition-all duration-300 rounded-lg shadow-lg p-4 `}
+            className={`bg-gray-900 noscroll ${
+              isMobile ? "w-full h-[40vh]" : chat ? "w-[55%] " : "w-[70%]"
+            } transition-all duration-300 rounded-lg shadow-lg p-4`}
           >
             <TabView
               func={closeChat}
               activeTab={activeTab}
               onTabChange={setActiveTab}
-              files={files}
-            />           
+            />
             <div className="h-[calc(100%-4rem)]">
               {activeTab === "code" ? (
                 <CodeEditor file={selectedFile} />
+              ) : activeTab === "LUA" ? (
+                <div className="h-full w-full bg-black"></div>
               ) : (
                 <PreviewFrame webContainer={webcontainer} files={files} />
               )}
             </div>
           </div>
 
-          {/* main work */}
-          {/* this is the searching box or will be text box  */}
-
+          {/* Chat Section */}
           <div
-            className={` ${
-              chat ? "block" : "hidden"
-            } rounded-xl p-1 w-[25%] bg-gray-50  h-full `}
+            className={`${
+              isMobile
+                ? chat
+                  ? "h-96"
+                  : "hidden"
+                : chat
+                ? "block w-[25%]"
+                : "hidden"
+            } rounded-xl p-1 bg-gray-50`}
           >
-            {/* inner div of the chat box  */}
-
-            <div className="w-full rounded-lg p-2 pt-10 relative  h-[89%] border-[1px] flex flex-col border-black">
+            <div className="w-full rounded-lg p-2 pt-10 relative h-[89%] border-[1px] flex flex-col border-black">
               <div onClick={closeChat} className="absolute top-3 right-3">
                 close
               </div>
@@ -282,55 +308,53 @@ export function Builder() {
               ))}
             </div>
 
-            <div className="flex mt-1 rounded-lg p-2 w-full    ">
+            <div className="flex mt-1 rounded-lg p-2 w-full">
               <br />
               {(loading || !templateSet) && <Loader />}
               {!(loading || !templateSet) && (
-                <div className="flex w-full ">
+                <div className="flex w-full">
                   <textarea
                     value={userPrompt}
-                    onChange={(e) => {
-                      setuserPrompt(e.target.value);
-                    }}
+                    onChange={(e) => setuserPrompt(e.target.value)}
                     onKeyPress={handleKeyPress}
                     className="px-3 py-1 w-full border-[1px] border-black border-l-none rounded-l-xl outline-none"
-                  ></textarea>
+                  />
                   <button
                     onClick={async () => {
                       if (userPrompt.trim() !== "") {
                         setMessages((prev) => [...prev, userPrompt.trim()]);
-                        setuserPrompt(""); // Clear input
-                      }
-                      const newMessage = {
-                        role: "user" as "user",
-                        content: userPrompt,
-                      };
+                        setuserPrompt("");
 
-                      setLoading(true);
-                      const stepsResponse = await axios.post(
-                        `${BACKEND_URL}/chat`,
-                        {
-                          messages: [...llmMessages, newMessage],
-                        }
-                      );
-                      setLoading(false);
+                        const newMessage = {
+                          role: "user" as "user",
+                          content: userPrompt,
+                        };
 
-                      setLlmMessages((x) => [...x, newMessage]);
-                      setLlmMessages((x) => [
-                        ...x,
-                        {
-                          role: "assistant",
-                          content: stepsResponse.data.response,
-                        },
-                      ]);
+                        setLoading(true);
+                        const stepsResponse = await axios.post(
+                          `${BACKEND_URL}/chat`,
+                          {
+                            messages: [...llmMessages, newMessage],
+                          }
+                        );
+                        setLoading(false);
 
-                      setSteps((s) => [
-                        ...s,
-                        ...parseXml(stepsResponse.data.response).map((x) => ({
+                        setLlmMessages((x) => [...x, newMessage]);
+                        setLlmMessages((x) => [
                           ...x,
-                          status: "pending" as "pending",
-                        })),
-                      ]);
+                          {
+                            role: "assistant",
+                            content: stepsResponse.data.response,
+                          },
+                        ]);
+                        setSteps((s) => [
+                          ...s,
+                          ...parseXml(stepsResponse.data.response).map((x) => ({
+                            ...x,
+                            status: "pending" as "pending",
+                          })),
+                        ]);
+                      }
                     }}
                     className="bg-red-400 w-[40%] px-4 rounded-r-xl"
                   >
@@ -345,13 +369,3 @@ export function Builder() {
     </div>
   );
 }
-
-// api for custom lua generation
-
-// web container
-
-// vercel subscription
-
-// AO oriented frontend
-
-// one click deployment to
