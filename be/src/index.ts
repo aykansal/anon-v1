@@ -39,7 +39,7 @@
 // );
 
 // const anthropic = new Anthropic({
-//   apiKey: "xai-OvR6xKY46HCd7LeksVuaUYkVbUgeJ8vqsxACAhZeRhWOmJP7nDyCVHdDMpHergVA8nOHK7LqON4HInvm",
+//   apiKey: "",
 //   baseURL: "https://api.x.ai/",
 // });
 
@@ -185,7 +185,7 @@ import bodyParser from "body-parser";
 import { promptsArr, testPromptsArr } from "./userPrompts";
 
 const anthropic = new Anthropic({
-  apiKey: "xai-OvR6xKY46HCd7LeksVuaUYkVbUgeJ8vqsxACAhZeRhWOmJP7nDyCVHdDMpHergVA8nOHK7LqON4HInvm",
+  apiKey: process.env.AI_API_KEY,
   baseURL: "https://api.x.ai/",
 });
 
